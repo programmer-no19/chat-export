@@ -1,8 +1,7 @@
 # chat-export: Convert WhatsApp Chats to HTML
 
 This tool converts a WhatsApp chat export into two HTML formats: one with inline media (such as images, videos, and audio files) and a compact version with media links.
-
-This fork is based on [mtln/chat-export](https://github.com/mtln/chat-export) and adds starred-message navigation plus a refreshed, WhatsApp-inspired HTML viewer.
+You can star messages in the HTML file as well
 
 ## Starred messages
 
