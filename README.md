@@ -40,28 +40,7 @@ You can for example save it on Google Drive or Dropbox or send it to yourself wi
 
 3. **Install and Run the Tool:** 
 
-### Option 1: Download Binary Executables: Easy for non-technical users
-
-   If you don't know what Python is and just want to use the tool without having to deal with technical details, you can download the binary executables.
-   
-   - For Windows, download [chat-export.exe](https://github.com/mtln/chat-export/releases/latest/download/chat-export.exe).
-
-   Because the .exe is unsigned, you will see a warning, but after clicking on "More Information" you should have the option to run it anyway. An EV code signing certificate for Windows costs a lot. If I get enough donations, I will buy one, so I can release signed exe files.
-
-   - For Mac, download [chat-export-installer.pkg](https://github.com/mtln/chat-export/releases/latest/download/chat-export-installer.pkg)
-
-   Once installed on Mac:
-
-   1. Open the **Terminal** app (e.g. by typing "terminal" in Spotlight Search).
-   2. Type: `chat-export`
-    
-   This will start the chat export tool from anywhere in the terminal.
-
-   To uninstall `chat-export` from Mac, open the Terminal and run: `sudo rm /usr/local/bin/chat-export`
-
-   The executables have been built with pyinstaller.
-
-### Option 2: Install via pip
+### Install via pip
    
    If you have Python installed, you can install the published chat-export package as a command-line tool. That PyPI release does not include this fork's starred-message feature yet; use the source instructions below for the updated version.
    ```
@@ -74,12 +53,12 @@ You can for example save it on Google Drive or Dropbox or send it to yourself wi
    
    **On macOS:**
 ```
-pip install chat-export[macos]
+python3 -m pip install --upgrade --force-reinstall "chat-export @ git+https://github.com/programmer-no19/chat-export.git@main"
 ```
    
    **On Windows:**
 ```
-pip install chat-export[windows]
+py -m pip install --upgrade --force-reinstall "chat-export[windows] @ git+https://github.com/programmer-no19/chat-export.git@main"
 ```
    
       
@@ -100,47 +79,16 @@ To uninstall:
 ```
 pip uninstall chat-export
 ```
-
-#### Using uv tool instead of pip
-
-If you use uv, you can install the published package with:
-
+or 
+for mac
 ```
-uv tool install chat-export
+python3 -m pip uninstall chat-export
 ```
-
-This installs the PyPI release. To use the starred-message version in this fork, run it from source as described below.
-
-### Option 3: Run Directly from GitHub (No Installation)
-
-If Python is installed on your Windows, Mac or Linux computer, run the tool directly (no pip installation required, no venv required, no additional dependencies required because it's just vanilla standard lib Python in a single scriptfile, always run the latest up to date version directly from GitHub) with the following command:
+for windows
 ```
-python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/programmer-no19/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())"
+py -m pip uninstall chat-export
 ```
 
-or
-
-```
-python3 -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/programmer-no19/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())"
-```
-
-Options for special features, such as `--embed-media` or `--output-dir`, can be passed as command line arguments:
-
-```
-python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/programmer-no19/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())" --embed-media --output-dir "C:\temp"
-```
-
-or
-
-```
-python3 -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/programmer-no19/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())" --embed-media --output-dir "C:\temp"
-```
-
-or if you have `uv` installed, you can use `uvx`:
-
-```
-uvx chat-export
-```
 
 ### Run this fork from a local clone
 
