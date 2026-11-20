@@ -2,10 +2,20 @@
 
 This tool converts a WhatsApp chat export into two HTML formats: one with inline media (such as images, videos, and audio files) and a compact version with media links.
 
+This fork is based on [mtln/chat-export](https://github.com/mtln/chat-export) and adds starred-message navigation plus a refreshed, WhatsApp-inspired HTML viewer.
+
+## Starred messages
+
+- Hover over or click a message to reveal its star button. On touchscreens, tap the message first.
+- Star a message, then use the star button in the top-right corner to open the starred-message pane.
+- Click a saved message in the pane to scroll to it in the chat.
+- Stars are saved in the browser for that exported chat when browser storage is available. They stay on your device and are not added to the WhatsApp ZIP. Some browsers restrict storage for local HTML files, in which case stars may reset after you close or reload the page.
 
 ## Binary Release Downloads
 * Windows: [chat-export.exe](https://github.com/mtln/chat-export/releases/latest/download/chat-export.exe)
 * Mac: [chat-export-installer.pkg](https://github.com/mtln/chat-export/releases/latest/download/chat-export-installer.pkg)
+
+> These are upstream installers. They do not include this fork's starred-message changes; use the source instructions below for this version.
 
 
 ## Why is this useful?
@@ -61,7 +71,7 @@ You can for example save it on Google Drive or Dropbox or send it to yourself wi
 
 ### Option 2: Install via pip
    
-   If you have Python installed, you can install chat-export as a command-line tool:
+   If you have Python installed, you can install the published chat-export package as a command-line tool. That PyPI release does not include this fork's starred-message feature yet; use the source instructions below for the updated version.
    ```
    pip install chat-export
    ```
@@ -100,56 +110,38 @@ pip uninstall chat-export
 ```
 
 #### Using uv tool instead of pip
-If you have uv installed, you can use `uv tool install` instead of `pip install`. This is perfect for tools like chat-export because it will install the dependencies in a virtual environment and not in the global environment - while still making the tool available globally in your shell / path. 
 
-#### Using uv tool instead of pip
-If you have uv installed, you can use `uv tool install` instead of `pip install`. This is perfect for tools like chat-export because it will install the dependencies in a virtual environment and not in the global environment - while still making the tool available globally in your shell / path. 
-
+If you use uv, you can install the published package with:
 
 ```
-uv tool install chat-export[windows]
-or
-uv tool install chat-export[macos]
-or just 
 uv tool install chat-export
-
-uninstall with:
-uv tool uninstall chat-export
 ```
 
+This installs the PyPI release. To use the starred-message version in this fork, run it from source as described below.
 
-`uv tool install chat-export[windows]` 
-or 
-`uv tool install chat-export[macos]` 
-or just 
-`uv tool install chat-export` 
-uninstall with: 
-`uv tool uninstall chat-export`
-
-
-### Option 3: Run Directly (No Installation)
+### Option 3: Run Directly from GitHub (No Installation)
 
 If Python is installed on your Windows, Mac or Linux computer, run the tool directly (no pip installation required, no venv required, no additional dependencies required because it's just vanilla standard lib Python in a single scriptfile, always run the latest up to date version directly from GitHub) with the following command:
 ```
-python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/mtln/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())"
+python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/programmer-no19/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())"
 ```
 
 or
 
 ```
-python3 -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/mtln/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())"
+python3 -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/programmer-no19/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())"
 ```
 
 Options for special features, such as `--embed-media` or `--output-dir`, can be passed as command line arguments:
 
 ```
-python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/mtln/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())" --embed-media --output-dir "C:\temp"
+python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/programmer-no19/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())" --embed-media --output-dir "C:\temp"
 ```
 
 or
 
 ```
-python3 -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/mtln/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())" --embed-media --output-dir "C:\temp"
+python3 -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/programmer-no19/chat-export/refs/heads/main/chat_export/chat_export.py').read().decode())" --embed-media --output-dir "C:\temp"
 ```
 
 or if you have `uv` installed, you can use `uvx`:
@@ -157,6 +149,18 @@ or if you have `uv` installed, you can use `uvx`:
 ```
 uvx chat-export
 ```
+
+### Run this fork from a local clone
+
+To run the starred-message version from this repository, clone it and launch the script from the project folder:
+
+```bash
+git clone https://github.com/programmer-no19/chat-export.git
+cd chat-export
+python3 chat_export/chat_export.py
+```
+
+No Python packages are required for this direct run. If you prefer the `chat-export` command, install this local checkout in editable mode with `python3 -m pip install -e .`, then run `chat-export`. On macOS, use `python3 -m pip install -e '.[macos]'` to enable the native file picker.
 
 ## Usage
 
