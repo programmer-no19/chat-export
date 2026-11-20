@@ -10,13 +10,6 @@ You can star messages in the HTML file as well
 - Click a saved message in the pane to scroll to it in the chat.
 - Stars are saved in the browser for that exported chat when browser storage is available. They stay on your device and are not added to the WhatsApp ZIP. Some browsers restrict storage for local HTML files, in which case stars may reset after you close or reload the page.
 
-## Binary Release Downloads
-* Windows: [chat-export.exe](https://github.com/mtln/chat-export/releases/latest/download/chat-export.exe)
-* Mac: [chat-export-installer.pkg](https://github.com/mtln/chat-export/releases/latest/download/chat-export-installer.pkg)
-
-> These are upstream installers. They do not include this fork's starred-message changes; use the source instructions below for this version.
-
-
 ## Why is this useful?
 The HTML export is:
 
