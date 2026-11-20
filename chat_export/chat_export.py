@@ -754,96 +754,283 @@ class HTMLRenderer(Renderer):
 
     def get_css_styles(self):
         """Return the CSS styles for the HTML output."""
-        return """body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #e5ddd5;
+        return """:root {
+            color-scheme: light;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #172126;
+            background: #e9edef;
+            --wa-header: #f7f9fa;
+            --muted: #667781;
+            --line: rgba(35, 53, 61, .1);
         }
-        .message {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 7.5px;
-            max-width: 65%;
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: #e9edef;
+            background-image: radial-gradient(rgba(91, 112, 120, .11) .7px, transparent .7px);
+            background-size: 18px 18px;
+            font-size: 15px;
+            line-height: 1.45;
+        }
+        button { font: inherit; }
+        .chat-header {
+            position: fixed;
+            z-index: 20;
+            inset: 0 0 auto;
+            height: 68px;
+            background: rgba(247, 249, 250, .88);
+            border-bottom: 1px solid var(--line);
+            box-shadow: 0 3px 16px rgba(24, 42, 49, .06);
+            -webkit-backdrop-filter: blur(18px) saturate(1.3);
+            backdrop-filter: blur(18px) saturate(1.3);
+        }
+        .chat-header-inner {
+            width: min(100%, 960px);
+            height: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .chat-header h1 {
+            min-width: 0;
+            margin: 0;
+            overflow: hidden;
+            color: #152126;
+            font-size: 1.08rem;
+            font-weight: 650;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .starred-toggle, .panel-close {
             position: relative;
-            clear: both;
+            display: inline-grid;
+            flex: 0 0 auto;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            color: #33464d;
+            background: rgba(255, 255, 255, .72);
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background .16s ease, transform .16s ease, color .16s ease;
+        }
+        .starred-toggle:hover, .panel-close:hover { background: #fff; transform: translateY(-1px); }
+        .starred-toggle[aria-expanded="true"] { color: #b77a00; }
+        .starred-toggle svg, .panel-close svg, .message-star svg { width: 20px; height: 20px; }
+        .star-count {
+            position: absolute;
+            top: -3px;
+            right: -4px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: #00a884;
+            border: 2px solid var(--wa-header);
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .star-count[data-count="0"] { display: none; }
+        .chat-container {
+            width: min(100%, 960px);
+            min-height: 100vh;
+            margin: 0 auto;
+            padding: 88px 20px 36px;
+        }
+        .chat-container > p { color: var(--muted); }
+        .message {
+            position: relative;
+            display: flow-root;
+            width: fit-content;
+            max-width: min(74%, 700px);
+            margin: 8px 0;
+            padding: 9px 12px 7px;
+            border: 1px solid rgba(28, 48, 55, .045);
+            border-radius: 9px 9px 9px 3px;
+            box-shadow: 0 1px 1px rgba(20, 38, 44, .08), 0 2px 5px rgba(20, 38, 44, .035);
+            transition: box-shadow .16s ease, outline-color .16s ease;
         }
         .message.sent {
-            float: right;
-            margin-left: 35%;
+            margin-right: 0;
+            margin-left: auto;
+            border-radius: 9px 9px 3px 9px;
         }
+        .message.received { margin-right: auto; margin-left: 0; }
         .message.whatsapp {
-            max-width: 100%
+            width: 100%;
+            max-width: 100%;
+            margin-right: 0;
+            margin-left: 0;
+            border-radius: 9px;
         }
+        .message.is-selected { box-shadow: 0 2px 12px rgba(20, 38, 44, .16); }
+        .message.is-highlighted {
+            outline: 2px solid rgba(0, 168, 132, .75);
+            outline-offset: 3px;
+            animation: message-arrive 1.4s ease-out;
+        }
+        @keyframes message-arrive {
+            0% { outline-color: rgba(0, 168, 132, .9); }
+            100% { outline-color: rgba(0, 168, 132, 0); }
+        }
+        .message-star {
+            position: absolute;
+            z-index: 2;
+            top: 50%;
+            display: grid;
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            place-items: center;
+            color: #77878d;
+            background: rgba(255, 255, 255, .92);
+            border: 1px solid rgba(35, 53, 61, .12);
+            border-radius: 50%;
+            box-shadow: 0 3px 10px rgba(20, 38, 44, .14);
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-50%) scale(.92);
+            transition: opacity .14s ease, transform .14s ease, color .14s ease;
+        }
+        .message.received .message-star { right: -42px; }
+        .message.sent .message-star { left: -42px; }
+        .message:hover .message-star, .message.is-selected .message-star,
+        .message:focus-within .message-star { opacity: 1; pointer-events: auto; transform: translateY(-50%) scale(1); }
+        .message-star:hover { color: #b77a00; transform: translateY(-50%) scale(1.08) !important; }
+        .message-star[aria-pressed="true"] { color: #d99a00; opacity: 1; pointer-events: auto; }
+        .message-star[aria-pressed="true"] svg { fill: currentColor; }
         .media {
             max-width: 100%;
-            border-radius: 5px;
+            border-radius: 7px;
             margin: 5px 0;
         }
         .text-file {
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid #dce2e4;
+            border-radius: 8px;
             padding: 10px;
-            background-color: #f9f9f9;
+            background-color: rgba(255, 255, 255, .8);
             margin: 5px 0;
         }
-        .text-file h4 {
-            margin: 0 0 10px 0;
-            color: #333;
-            font-size: 0.9em;
-        }
+        .text-file h4 { margin: 0 0 10px; color: #33464d; font-size: .9em; }
         .text-content {
-            background-color: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 3px;
-            padding: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8em;
             max-height: 300px;
             overflow-y: auto;
+            padding: 10px;
+            color: #293a40;
+            background-color: #fff;
+            border: 1px solid #e0e5e6;
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: .8em;
             white-space: pre-wrap;
-            word-wrap: break-word;
+            overflow-wrap: anywhere;
         }
         .timestamp {
-            color: #667781;
-            font-size: 0.75em;
             float: right;
-            margin-left: 10px;
-            margin-top: 5px;
+            margin: 7px 0 0 12px;
+            color: var(--muted);
+            font-size: .7em;
+            white-space: nowrap;
         }
         .sender {
-            color: #1f7aad;
-            font-size: 0.85em;
-            font-weight: bold;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+            color: #147c73;
+            font-size: .78em;
+            font-weight: 650;
         }
-        .content {
-            word-wrap: break-word;
+        .content { overflow-wrap: anywhere; }
+        .clearfix::after { content: ""; display: table; clear: both; }
+        a { color: #087e76; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .starred-backdrop {
+            position: fixed;
+            z-index: 30;
+            inset: 0;
+            background: rgba(21, 34, 39, .18);
+            -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(2px);
         }
-        .clearfix::after {
-            content: "";
-            clear: both;
-            display: table;
+        .starred-backdrop[hidden], .starred-panel[hidden] { display: none; }
+        .starred-panel {
+            position: fixed;
+            z-index: 31;
+            inset: 12px 12px 12px auto;
+            display: flex;
+            flex-direction: column;
+            width: min(390px, calc(100vw - 24px));
+            overflow: hidden;
+            color: #172126;
+            background: rgba(247, 250, 251, .78);
+            border: 1px solid rgba(255, 255, 255, .72);
+            border-radius: 22px;
+            box-shadow: 0 24px 70px rgba(15, 32, 39, .23), inset 0 1px rgba(255, 255, 255, .8);
+            -webkit-backdrop-filter: blur(28px) saturate(1.4);
+            backdrop-filter: blur(28px) saturate(1.4);
+            animation: panel-in .18s ease-out;
         }
-        a {
-            color: #039be5;
-            text-decoration: none;
+        @keyframes panel-in { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
+        .starred-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 19px 18px 15px;
+            border-bottom: 1px solid rgba(35, 53, 61, .09);
         }
-        a:hover {
-            text-decoration: underline;
+        .starred-panel-title { margin: 0; font-size: 1.05rem; font-weight: 680; }
+        .starred-panel-subtitle { margin: 3px 0 0; color: var(--muted); font-size: .82rem; }
+        .panel-close { width: 36px; height: 36px; }
+        .starred-list { flex: 1; overflow-y: auto; padding: 10px; }
+        .starred-empty {
+            margin: 0;
+            padding: 34px 18px;
+            color: var(--muted);
+            text-align: center;
+            font-size: .92rem;
         }
-        @media(width > 800px) {
-            .message.received {
-                float: left;
-                margin-right: 35%;
-            }
+        .starred-item {
+            display: block;
+            width: 100%;
+            margin: 0 0 7px;
+            padding: 12px 13px;
+            color: inherit;
+            text-align: left;
+            background: rgba(255, 255, 255, .65);
+            border: 1px solid rgba(255, 255, 255, .72);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background .14s ease, transform .14s ease;
+        }
+        .starred-item:hover { background: rgba(255, 255, 255, .96); transform: translateY(-1px); }
+        .starred-item-meta { display: flex; justify-content: space-between; gap: 10px; color: #147c73; font-size: .77rem; font-weight: 650; }
+        .starred-item-time { color: var(--muted); font-size: .72rem; font-weight: 400; white-space: nowrap; }
+        .starred-item-preview { display: -webkit-box; margin-top: 5px; overflow: hidden; color: #314249; font-size: .88rem; line-height: 1.4; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+        @media (max-width: 600px) {
+            .chat-header-inner { padding: 0 14px; }
+            .chat-container { padding: 82px 14px 26px; }
+            .message { max-width: 82%; }
+            .starred-panel { inset: 8px 8px 8px auto; width: min(390px, calc(100vw - 16px)); border-radius: 18px; }
+        }
+        @media (hover: none) {
+            .message-star { opacity: 0; pointer-events: none; }
+            .message.is-selected .message-star,
+            .message-star[aria-pressed="true"] { opacity: 1; pointer-events: auto; }
         }
         @media print {
-            body {
-                background-color: #ffffff;
-            }
+            body { background: #fff; }
+            .chat-header, .starred-panel, .starred-backdrop, .message-star { display: none !important; }
+            .chat-container { width: 100%; min-height: 0; padding: 12px 0; }
+            .message { box-shadow: none; break-inside: avoid; }
         }"""
 
     def get_html_header(self):
@@ -860,13 +1047,161 @@ class HTMLRenderer(Renderer):
     </style>
 </head>
 <body>
-<div class="chat-container">
-<h1>{safe_name}</h1>"""
+<header class="chat-header">
+    <div class="chat-header-inner">
+        <h1 title="{safe_name}">{safe_name}</h1>
+        <button class="starred-toggle" id="starred-toggle" type="button" aria-label="Open starred messages" aria-expanded="false" aria-controls="starred-panel" title="Starred messages">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></svg>
+            <span class="star-count" id="star-count" data-count="0" aria-live="polite">0</span>
+        </button>
+    </div>
+</header>
+<div class="starred-backdrop" id="starred-backdrop" hidden></div>
+<aside class="starred-panel" id="starred-panel" aria-label="Starred messages" hidden>
+    <div class="starred-panel-header">
+        <div><h2 class="starred-panel-title">Starred messages</h2><p class="starred-panel-subtitle" id="starred-panel-subtitle">Saved for this chat</p></div>
+        <button class="panel-close" id="starred-close" type="button" aria-label="Close starred messages" title="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+    </div>
+    <div class="starred-list" id="starred-list"><p class="starred-empty">Messages you star will show up here.</p></div>
+</aside>
+<main class="chat-container" id="chat-messages">"""
 
     def get_html_footer(self):
         """Generate the HTML footer."""
         return """
-</div>
+ </main>
+<script>
+(() => {
+    const messages = Array.from(document.querySelectorAll('.message[data-id]'));
+    const toggle = document.getElementById('starred-toggle');
+    const panel = document.getElementById('starred-panel');
+    const backdrop = document.getElementById('starred-backdrop');
+    const closeButton = document.getElementById('starred-close');
+    const list = document.getElementById('starred-list');
+    const count = document.getElementById('star-count');
+    const subtitle = document.getElementById('starred-panel-subtitle');
+    const chatPath = location.pathname.replace(/\/(?:chat|chat_media_linked)\.html$/, '');
+    const storageKey = `chat-export:starred:${chatPath}:${document.title}`;
+    let starredIds = new Set();
+
+    try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        if (Array.isArray(saved)) {
+            const idsInChat = new Set(messages.map(message => message.dataset.id));
+            starredIds = new Set(saved.map(String).filter(id => idsInChat.has(id)));
+        }
+    } catch (_) {
+        // Starring still works for this page view when browser storage is unavailable.
+    }
+
+    function persist() {
+        try { localStorage.setItem(storageKey, JSON.stringify(Array.from(starredIds))); }
+        catch (_) { /* Keep the current-page state even if storage is blocked. */ }
+    }
+
+    function updateStarButton(message) {
+        const button = message.querySelector('.message-star');
+        if (!button) return;
+        const isStarred = starredIds.has(message.dataset.id);
+        button.setAttribute('aria-pressed', String(isStarred));
+        button.setAttribute('aria-label', `${isStarred ? 'Unstar' : 'Star'} message ${message.dataset.id}`);
+        button.title = isStarred ? 'Remove star' : 'Star message';
+    }
+
+    function renderList() {
+        count.textContent = String(starredIds.size);
+        count.dataset.count = String(starredIds.size);
+        subtitle.textContent = starredIds.size === 1 ? '1 saved message' : `${starredIds.size} saved messages`;
+        list.replaceChildren();
+        const savedMessages = messages.filter(message => starredIds.has(message.dataset.id));
+        if (!savedMessages.length) {
+            const empty = document.createElement('p');
+            empty.className = 'starred-empty';
+            empty.textContent = 'Messages you star will show up here.';
+            list.append(empty);
+            return;
+        }
+        for (const message of savedMessages) {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'starred-item';
+            item.dataset.targetId = message.dataset.id;
+            const meta = document.createElement('span');
+            meta.className = 'starred-item-meta';
+            const sender = document.createElement('span');
+            sender.textContent = message.querySelector('.sender')?.textContent || 'Message';
+            const time = document.createElement('span');
+            time.className = 'starred-item-time';
+            time.textContent = (message.querySelector('.timestamp')?.textContent || '').replace(/\s*\(#\d+\)$/, '');
+            const preview = document.createElement('span');
+            preview.className = 'starred-item-preview';
+            const content = (message.querySelector('.content')?.textContent || '').replace(/\s+/g, ' ').trim();
+            preview.textContent = content || 'Media message';
+            meta.append(sender, time);
+            item.append(meta, preview);
+            list.append(item);
+        }
+    }
+
+    function setPanelOpen(isOpen) {
+        panel.hidden = !isOpen;
+        backdrop.hidden = !isOpen;
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        toggle.setAttribute('aria-label', isOpen ? 'Close starred messages' : 'Open starred messages');
+        if (isOpen) closeButton.focus();
+        else toggle.focus();
+    }
+
+    messages.forEach(updateStarButton);
+    renderList();
+
+    document.addEventListener('click', event => {
+        const starButton = event.target.closest('.message-star');
+        if (starButton) {
+            event.stopPropagation();
+            const message = starButton.closest('.message');
+            const id = message?.dataset.id;
+            if (!id) return;
+            if (starredIds.has(id)) starredIds.delete(id);
+            else starredIds.add(id);
+            updateStarButton(message);
+            persist();
+            renderList();
+            return;
+        }
+
+        const listItem = event.target.closest('.starred-item');
+        if (listItem) {
+            const target = messages.find(message => message.dataset.id === listItem.dataset.targetId);
+            if (target) {
+                setPanelOpen(false);
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                target.setAttribute('tabindex', '-1');
+                target.focus({ preventScroll: true });
+                target.classList.add('is-highlighted');
+                window.setTimeout(() => target.classList.remove('is-highlighted'), 1500);
+            }
+            return;
+        }
+
+        const message = event.target.closest('.message');
+        if (message) {
+            messages.forEach(item => item.classList.toggle('is-selected', item === message));
+        } else if (!event.target.closest('.starred-panel')) {
+            messages.forEach(item => item.classList.remove('is-selected'));
+        }
+    });
+
+    toggle.addEventListener('click', () => setPanelOpen(panel.hidden));
+    closeButton.addEventListener('click', () => setPanelOpen(false));
+    backdrop.addEventListener('click', () => setPanelOpen(false));
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !panel.hidden) setPanelOpen(false);
+    });
+})();
+</script>
 </body>
 </html>"""
 
@@ -1014,6 +1349,14 @@ class HTMLRenderer(Renderer):
 
         # Common message structure
         message_start = f'\n<div class="message {message_class} clearfix" data-id="{message.id}" style="background-color: {bg_color};">'
+        star_button = (
+            '<button class="message-star" type="button" aria-pressed="false" '
+            f'aria-label="Star message {message.id}" title="Star message">'
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
+            'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+            '<path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/>'
+            '</svg></button>'
+        )
         sender_div = f'<div class="sender">{html_module.escape(message.sender)}</div>'
         content_start = '<div class="content">'
         content_end = '</div>'
@@ -1024,6 +1367,10 @@ class HTMLRenderer(Renderer):
         # Write message start to both files
         main_f.write(message_start)
         media_f.write(message_start)
+
+        # Add a per-message control for starring in the interactive HTML.
+        main_f.write(star_button)
+        media_f.write(star_button)
 
         # Write sender to both files
         main_f.write(sender_div)
